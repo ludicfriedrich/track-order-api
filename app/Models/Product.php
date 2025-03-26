@@ -9,10 +9,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Product extends Model
 {
     use HasFactory;
-    
+
     // Les champs que l'on peut remplir (en masse)
     protected $fillable = [
-        'name', 'description', 'price', 'stock'
+        'name',
+        'description',
+        'price',
+        'stock'
     ];
 
     // Formatage de la date de création
@@ -25,5 +28,18 @@ class Product extends Model
     public function getUpdatedAtAttribute($value)
     {
         return Carbon::parse($value)->format('d/m/Y H:i:s');
+    }
+
+    // Méthode pour mettre à jour le stock
+    public function updateStock(int $quantityChange)
+    {
+        // Vérifier si le stock est suffisant avant de réduire
+        if ($this->stock + $quantityChange < 0) {
+            throw new \Exception("Stock insuffisant pour le produit : {$this->name}");
+        }
+
+        // Mettre à jour le stock
+        $this->stock += $quantityChange;
+        $this->save();
     }
 }

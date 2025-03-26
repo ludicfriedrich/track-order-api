@@ -161,6 +161,9 @@ class OrderController extends Controller
                 $quantity = $lineData['quantity'];
                 $unitPrice = $product->price;
 
+                // Réduire le stock du produit
+                $product->updateStock(-$quantity);
+
                 OrderLine::create([
                     'order_id' => $order->id,
                     'product_id' => $product->id,
@@ -379,6 +382,12 @@ class OrderController extends Controller
 
             // Mise à jour des lignes de commande si fournies
             if (isset($validated['order_lines'])) {
+                // Restaurer le stock des anciennes lignes de commande
+                foreach ($order->orderLines as $orderLine) {
+                    $product = $orderLine->product;
+                    $product->updateStock($orderLine->quantity);
+                }
+
                 // Supprimer les anciennes lignes de commande
                 $order->orderLines()->delete();
 
@@ -388,6 +397,9 @@ class OrderController extends Controller
                     $product = Product::find($lineData['id']);
                     $quantity = $lineData['quantity'];
                     $unitPrice = $product->price;
+
+                    // Réduire le stock du produit
+                    $product->updateStock(-$quantity);
 
                     // Créer une nouvelle ligne de commande
                     OrderLine::create([
@@ -467,6 +479,13 @@ class OrderController extends Controller
         }
 
         try {
+            // Restaurer le stock des produits associés
+            foreach ($order->orderLines as $orderLine) {
+                $product = $orderLine->product;
+
+                // Restaurer le stock du produit
+                $product->updateStock($orderLine->quantity);
+            }
             // Suppression de la commande
             $order->delete();
 
