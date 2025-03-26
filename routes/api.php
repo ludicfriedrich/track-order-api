@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductController;
 
 // Route d'inscription
@@ -19,4 +20,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Route pour les produits
     Route::resource('products', ProductController::class);
+    Route::resource('orders', OrderController::class);
 });
