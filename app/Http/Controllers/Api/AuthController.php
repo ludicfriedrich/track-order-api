@@ -9,8 +9,60 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
+/**
+ * @OA\SecurityScheme(
+ *     securityScheme="bearerAuth",
+ *     type="http",
+ *     scheme="bearer",
+ *     bearerFormat="JWT",
+ *     description="Utilisez un token Bearer pour accéder aux routes protégées."
+ * )
+ */
+
+
 class AuthController extends Controller
 {
+
+    /**
+     * @OA\Post(
+     *     path="/api/register",
+     *     summary="Inscription d'un nouvel utilisateur",
+     *     description="Permet de créer un nouvel utilisateur et de générer un token d'authentification.",
+     *     tags={"Authentification"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name", "email", "password", "password_confirmation"},
+     *             @OA\Property(property="name", type="string", example="Ludic Test", description="Nom de l'utilisateur."),
+     *             @OA\Property(property="email", type="string", format="email", example="ludic.test@example.com", description="Adresse email de l'utilisateur."),
+     *             @OA\Property(property="password", type="string", format="password", example="password123", description="Mot de passe de l'utilisateur."),
+     *             @OA\Property(property="password_confirmation", type="string", format="password", example="password123", description="Confirmation du mot de passe.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Utilisateur créé avec succès.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Utilisateur créé avec succès."),
+     *             @OA\Property(property="user", type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="name", type="string", example="Ludic Test"),
+     *                 @OA\Property(property="email", type="string", example="ludic.test@example.com")
+     *             ),
+     *             @OA\Property(property="token", type="string", example="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Erreur de validation.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Erreur de validation."),
+     *             @OA\Property(property="errors", type="object", example={"email": {"Cette adresse email est déjà utilisée."}})
+     *         )
+     *     )
+     * )
+     */
+
     // Inscription
     public function register(Request $request)
     {
@@ -65,6 +117,52 @@ class AuthController extends Controller
         ], 201);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/login",
+     *     summary="Connexion d'un utilisateur",
+     *     description="Permet à un utilisateur de se connecter et de recevoir un token d'authentification.",
+     *     tags={"Authentification"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email", "password"},
+     *             @OA\Property(property="email", type="string", format="email", example="ludic.test@example.com", description="Adresse email de l'utilisateur."),
+     *             @OA\Property(property="password", type="string", format="password", example="password123", description="Mot de passe de l'utilisateur.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Connexion réussie.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Connexion réussie !"),
+     *             @OA\Property(property="user", type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="name", type="string", example="Ludic Test"),
+     *                 @OA\Property(property="email", type="string", example="Ludic.Test@example.com")
+     *             ),
+     *             @OA\Property(property="token", type="string", example="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Identifiants incorrects.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Les identifiants fournis sont incorrects."),
+     *             @OA\Property(property="errors", type="object", example={"email": {"Les identifiants fournis sont incorrects."}})
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Erreur de validation.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Erreur de validation."),
+     *             @OA\Property(property="errors", type="object", example={"email": {"L'adresse email est obligatoire."}})
+     *         )
+     *     )
+     * )
+     */
+
     // Connexion
     public function login(Request $request)
     {
@@ -115,6 +213,29 @@ class AuthController extends Controller
         ], 200);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/logout",
+     *     summary="Déconnexion de l'utilisateur",
+     *     description="Révoque tous les tokens de l'utilisateur connecté.",
+     *     tags={"Authentification"},
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Déconnexion réussie.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Déconnexion réussie !")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Aucun utilisateur authentifié.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Aucun utilisateur authentifié.")
+     *         )
+     *     )
+     * )
+     */
     // Déconnexion
     public function logout(Request $request)
     {
@@ -133,6 +254,35 @@ class AuthController extends Controller
             'message' => 'Déconnexion réussie !'
         ], 200);
     }
+
+    /**
+     * @OA\Get(
+     *     path="/api/user",
+     *     summary="Récupérer les informations de l'utilisateur connecté",
+     *     description="Retourne les informations de l'utilisateur actuellement authentifié.",
+     *     tags={"Authentification"},
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Informations de l'utilisateur récupérées avec succès.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Utilisateur récupéré avec succès."),
+     *             @OA\Property(property="user", type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="name", type="string", example="Ludic Test"),
+     *                 @OA\Property(property="email", type="string", example="ludic.test@example.com")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Aucun utilisateur authentifié.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Aucun utilisateur authentifié.")
+     *         )
+     *     )
+     * )
+     */
 
     // Récupérer les informations de l'utilisateur connecté
     public function getUser(Request $request)

@@ -1,0 +1,383 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Track Order API",
+        "description": "API pour la gestion des commandes.",
+        "contact": {
+            "email": "ludicagnihouede@gmail.com"
+        },
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/register": {
+            "post": {
+                "tags": [
+                    "Authentification"
+                ],
+                "summary": "Inscription d'un nouvel utilisateur",
+                "description": "Permet de créer un nouvel utilisateur et de générer un token d'authentification.",
+                "operationId": "8e4e3cb7b46126f4696379d3c7eeb4ad",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "description": "Nom de l'utilisateur.",
+                                        "type": "string",
+                                        "example": "Ludic Test"
+                                    },
+                                    "email": {
+                                        "description": "Adresse email de l'utilisateur.",
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "ludic.test@example.com"
+                                    },
+                                    "password": {
+                                        "description": "Mot de passe de l'utilisateur.",
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    },
+                                    "password_confirmation": {
+                                        "description": "Confirmation du mot de passe.",
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Utilisateur créé avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Utilisateur créé avec succès."
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Ludic Test"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "ludic.test@example.com"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Erreur de validation.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Erreur de validation."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "email": [
+                                                    "Cette adresse email est déjà utilisée."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "Authentification"
+                ],
+                "summary": "Connexion d'un utilisateur",
+                "description": "Permet à un utilisateur de se connecter et de recevoir un token d'authentification.",
+                "operationId": "222b2625838e3c57e017987f73598fda",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "description": "Adresse email de l'utilisateur.",
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "jean.dupont@example.com"
+                                    },
+                                    "password": {
+                                        "description": "Mot de passe de l'utilisateur.",
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Connexion réussie.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Connexion réussie !"
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Jean Dupont"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "jean.dupont@example.com"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Identifiants incorrects.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Les identifiants fournis sont incorrects."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "email": [
+                                                    "Les identifiants fournis sont incorrects."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Erreur de validation.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Erreur de validation."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "email": [
+                                                    "L'adresse email est obligatoire."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/logout": {
+            "post": {
+                "tags": [
+                    "Authentification"
+                ],
+                "summary": "Déconnexion de l'utilisateur",
+                "description": "Révoque tous les tokens de l'utilisateur connecté.",
+                "operationId": "ad65cbbd4e9f201619eae184a5961a98",
+                "responses": {
+                    "200": {
+                        "description": "Déconnexion réussie.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Déconnexion réussie !"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Aucun utilisateur authentifié.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Aucun utilisateur authentifié."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/user": {
+            "get": {
+                "tags": [
+                    "Authentification"
+                ],
+                "summary": "Récupérer les informations de l'utilisateur connecté",
+                "description": "Retourne les informations de l'utilisateur actuellement authentifié.",
+                "operationId": "f016c0659a1d971af16fc5430fb93b55",
+                "responses": {
+                    "200": {
+                        "description": "Informations de l'utilisateur récupérées avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Utilisateur récupéré avec succès."
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Jean Dupont"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "jean.dupont@example.com"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Aucun utilisateur authentifié.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Aucun utilisateur authentifié."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "description": "Utilisez un token Bearer pour accéder aux routes protégées.",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Authentification",
+            "description": "Authentification"
+        }
+    ]
+}
